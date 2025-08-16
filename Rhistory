@@ -1,0 +1,512 @@
+#performing box test
+Box.test(fitA_SBUX$residuals, lag= 2, type="Ljung-Box")
+Box.test(fitA_SBUX$residuals,  type="Ljung-Box")
+N = length(SBUX_Close_Prices)
+n = 0.7*N
+train = SBUX_Close_Prices[1:n, ]
+test  = SBUX_Close_Prices[(n+1):N,  ]
+test
+trainarimafit <- auto.arima(train, seasonal =FALSE)
+AA<-tsdisplay(residuals(trainarimafit),lag.max = 40,main='(0,1,1) Model Residuals')
+trainarimafit
+predlen=length(test)
+trainarimafit1 <- forecast(trainarimafit, h=predlen)
+trainarimafit1
+accuracy(trainarimafit1)
+meanvalues <- as.vector(trainarimafit1$mean)
+precios <- as.vector(test$SBUX.Close)
+plot(meanvalues, type= "line", col= "red")
+lines(precios, type = "line")
+SBUXfc1 <- meanf(SBUX_Close_Prices, h=40)
+SBUXfc2 <- rwf(SBUX_Close_Prices, h=40)
+SBUXfc3 <- rwf(SBUX_Close_Prices, drift=TRUE, h=40)
+SBUXfc1
+SBUXtest=365
+accuracy(SBUXfc1, SBUXtest)
+plot(SBUXfc1)
+accuracy(SBUXfc2, SBUXtest)
+plot(SBUXfc2)
+accuracy(SBUXfc3, SBUXtest)
+plot(SBUXfc3)
+Box.test(diff(SBUX_Close_Prices), lag=40, type="Ljung-Box")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+SBUX
+#load the data in a data frame
+SBUX_data_prophet <- data.frame(ds = index(SBUX),y = as.numeric(SBUX[,'SBUX.Close']))
+head(SBUX_data_prophet)
+tail(SBUX_data_prophet)
+#summary of the model
+summary(SBUX_data_prophet)
+#building prophet model using the function
+SBUX_model<- prophet(SBUX_data_prophet)
+#predict future values for 365 days
+Future1_SBUX<- make_future_dataframe(SBUX_model,periods=365)
+head(Future1_SBUX)
+## Forecasting the models created and forecasting the data for 365 days
+forecast_SBUX<- predict(SBUX_model,Future1_SBUX)
+tail(forecast_SBUX[c('ds','yhat','yhat_lower','yhat_upper')])
+dyplot.prophet(SBUX_model,forecast_SBUX)
+prophet_plot_components(SBUX_model,forecast_SBUX)
+#Creating train prediction datset to compare the real data
+dataprediction <- data.frame(forecast_SBUX$ds,forecast_SBUX$yhat)
+trainlen <- length(SBUX_data_prophet)
+dataprediction1 <- dataprediction[c(1:trainlen),]
+dataprediction1
+#accuracy calculation with MAPE estimator
+accuracy(dataprediction$forecast_SBUX.yhat,SBUX_data_prophet$y)
+# ARIMA MODEL Forecating :
+class(SBUX)#Class is SBUX
+# Close price of the stock is taken(4th column) 1.open,2.high,3.Low,4.Close,5.Adjacent close.
+SBUX_Close_Prices = SBUX[,4]
+plot(SBUX_Close_Prices)
+class(SBUX_Close_Prices)
+par(mfrow=c(1,2))
+# ADF test for p value.
+Acf(SBUX_Close_Prices,main='ACF for differenced series')
+Pacf(SBUX_Close_Prices,main='Pacf for differenced seris')
+#model fit for STARBUCKS CLose Prices
+print(adf.test(SBUX_Close_Prices))
+modelfit_SBUX <- auto.arima(SBUX_Close_Prices, lambda = "auto")
+modelfit_SBUX
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+ndiffs(SBUX_Close_Prices)
+stationaryTS <- diff(SBUX_Close_Prices, differences= 1)
+plot(stationaryTS, type="l", main="Differenced and Stationary")
+#fit for auto arima model seasonal is false
+#time series display of residuals of fit A of lag max 40
+fitA_SBUX<-auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+tsdisplay(residuals(fitA_SBUX),lag.max = 40,main='(0,1,1) Model Residuals')
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+# lags did played at the 24th position from the previous
+#fit model difference it further for fit C a custom model no lags identified.
+fitB_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,35))
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+SBUX
+#load the data in a data frame
+SBUX_data_prophet <- data.frame(ds = index(SBUX),y = as.numeric(SBUX[,'SBUX.Close']))
+head(SBUX_data_prophet)
+tail(SBUX_data_prophet)
+#summary of the model
+summary(SBUX_data_prophet)
+#building prophet model using the function
+SBUX_model<- prophet(SBUX_data_prophet)
+#predict future values for 365 days
+Future1_SBUX<- make_future_dataframe(SBUX_model,periods=365)
+head(Future1_SBUX)
+## Forecasting the models created and forecasting the data for 365 days
+forecast_SBUX<- predict(SBUX_model,Future1_SBUX)
+tail(forecast_SBUX[c('ds','yhat','yhat_lower','yhat_upper')])
+dyplot.prophet(SBUX_model,forecast_SBUX)
+prophet_plot_components(SBUX_model,forecast_SBUX)
+#Creating train prediction datset to compare the real data
+dataprediction <- data.frame(forecast_SBUX$ds,forecast_SBUX$yhat)
+trainlen <- length(SBUX_data_prophet)
+dataprediction1 <- dataprediction[c(1:trainlen),]
+dataprediction1
+#accuracy calculation with MAPE estimator
+accuracy(dataprediction$forecast_SBUX.yhat,SBUX_data_prophet$y)
+# ARIMA MODEL Forecating :
+class(SBUX)#Class is SBUX
+# Close price of the stock is taken(4th column) 1.open,2.high,3.Low,4.Close,5.Adjacent close.
+SBUX_Close_Prices = SBUX[,4]
+plot(SBUX_Close_Prices)
+class(SBUX_Close_Prices)
+par(mfrow=c(1,2))
+# ADF test for p value.
+Acf(SBUX_Close_Prices,main='ACF for differenced series')
+Pacf(SBUX_Close_Prices,main='Pacf for differenced seris')
+#model fit for STARBUCKS CLose Prices
+print(adf.test(SBUX_Close_Prices))
+modelfit_SBUX <- auto.arima(SBUX_Close_Prices, lambda = "auto")
+modelfit_SBUX
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+ndiffs(SBUX_Close_Prices)
+stationaryTS <- diff(SBUX_Close_Prices, differences= 1)
+plot(stationaryTS, type="l", main="Differenced and Stationary")
+#fit for auto arima model seasonal is false
+#time series display of residuals of fit A of lag max 40
+fitA_SBUX<-auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+tsdisplay(residuals(fitA_SBUX),lag.max = 40,main='(0,1,1) Model Residuals')
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+# lags did played at the 24th position from the previous
+#fit model difference it further for fit C a custom model no lags identified.
+fitB_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,35))
+tsdisplay(residuals(fitB_SBUX),lag.max =40,main='(1,1,35) Model Residuals')
+# lags did played at the 24th position from the previous
+#fit model difference it further for fit C a custom model no lags identified.
+fitC_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,24))
+tsdisplay(residuals(fitB_SBUX),lag.max = 40,main='(1,1,24) Model Residuals')
+#Having a set standard ARIMA model multiple lags exist
+fitD_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,1))
+tsdisplay(residuals(fitB_SBUX),lag.max = 40,main='(1,1,1) Model Residuals')
+# Plot of the arima models for a total of 365 days. 3 out of the 4 models says hold.
+par(mfrow=c(2,2))
+term<- 365
+price_forecast_SBUX <- forecast(modelfit_SBUX, h=term)
+plot(price_forecast_SBUX)
+# forecasting the models with the models using the forecast function for 365 days.
+fcast1_SBUX<-forecast(fitA_SBUX,h=term)
+plot(fcast1_SBUX)
+fcast2_SBUX<-forecast(fitB_SBUX,h=term)
+plot(fcast2_SBUX)
+fcast3_SBUX<-forecast(fitC_SBUX,h=term)
+plot(fcast3_SBUX)
+fcast4_SBUX<-forecast(fitD_SBUX,h=term)
+plot(fcast4_SBUX)
+a <-accuracy(fcast1_SBUX)# accuracy according  to MAPE 99.173 %
+b<- accuracy(fcast2_SBUX)# accuracy according  to MAPE 99.168 %
+c <-accuracy(fcast3_SBUX)# accuracy according to MAPE  99.167 %
+d <-accuracy(fcast4_SBUX)# accuracy according to MAPE  99.172 %
+#performing box test
+Box.test(fitA_SBUX$residuals, lag= 2, type="Ljung-Box")
+Box.test(fitA_SBUX$residuals,  type="Ljung-Box")
+N = length(SBUX_Close_Prices)
+n = 0.7*N
+train = SBUX_Close_Prices[1:n, ]
+test  = SBUX_Close_Prices[(n+1):N,  ]
+test
+trainarimafit <- auto.arima(train, seasonal =FALSE)
+AA<-tsdisplay(residuals(trainarimafit),lag.max = 40,main='(0,1,1) Model Residuals')
+trainarimafit
+predlen=length(test)
+trainarimafit1 <- forecast(trainarimafit, h=predlen)
+trainarimafit1
+accuracy(trainarimafit1)
+meanvalues <- as.vector(trainarimafit1$mean)
+precios <- as.vector(test$SBUX.Close)
+plot(meanvalues, type= "line", col= "red")
+lines(precios, type = "line")
+SBUXfc1 <- meanf(SBUX_Close_Prices, h=40)
+SBUXfc2 <- rwf(SBUX_Close_Prices, h=40)
+SBUXfc3 <- rwf(SBUX_Close_Prices, drift=TRUE, h=40)
+SBUXfc1
+SBUXtest=365
+accuracy(SBUXfc1, SBUXtest)
+plot(SBUXfc1)
+accuracy(SBUXfc2, SBUXtest)
+plot(SBUXfc2)
+accuracy(SBUXfc3, SBUXtest)
+plot(SBUXfc3)
+Box.test(diff(SBUX_Close_Prices), lag=40, type="Ljung-Box")
+#Including the required packages
+library(prophet)
+library(tidyverse)
+library(quantmod)
+library(tseries)
+library(timeSeries)
+library(forecast)
+library(xts)
+library(ggplot2)
+#Prophet Model Forecasting
+#Input for prophet model from Yahoo finance from 2013-01-01
+getSymbols("SBUX", src="yahoo", from="2013-01-01")
+SBUX
+#load the data in a data frame
+SBUX_data_prophet <- data.frame(ds = index(SBUX),y = as.numeric(SBUX[,'SBUX.Close']))
+head(SBUX_data_prophet)
+tail(SBUX_data_prophet)
+#summary of the model
+summary(SBUX_data_prophet)
+#building prophet model using the function
+SBUX_model<- prophet(SBUX_data_prophet)
+#predict future values for 365 days
+Future1_SBUX<- make_future_dataframe(SBUX_model,periods=365)
+head(Future1_SBUX)
+## Forecasting the models created and forecasting the data for 365 days
+forecast_SBUX<- predict(SBUX_model,Future1_SBUX)
+tail(forecast_SBUX[c('ds','yhat','yhat_lower','yhat_upper')])
+dyplot.prophet(SBUX_model,forecast_SBUX)
+prophet_plot_components(SBUX_model,forecast_SBUX)
+#Creating train prediction datset to compare the real data
+dataprediction <- data.frame(forecast_SBUX$ds,forecast_SBUX$yhat)
+trainlen <- length(SBUX_data_prophet)
+dataprediction1 <- dataprediction[c(1:trainlen),]
+dataprediction1
+#accuracy calculation with MAPE estimator
+accuracy(dataprediction$forecast_SBUX.yhat,SBUX_data_prophet$y)
+# ARIMA MODEL Forecating :
+class(SBUX)#Class is SBUX
+# Close price of the stock is taken(4th column) 1.open,2.high,3.Low,4.Close,5.Adjacent close.
+SBUX_Close_Prices = SBUX[,4]
+plot(SBUX_Close_Prices)
+class(SBUX_Close_Prices)
+par(mfrow=c(1,2))
+# ADF test for p value.
+Acf(SBUX_Close_Prices,main='ACF for differenced series')
+Pacf(SBUX_Close_Prices,main='Pacf for differenced seris')
+#model fit for STARBUCKS CLose Prices
+print(adf.test(SBUX_Close_Prices))
+modelfit_SBUX <- auto.arima(SBUX_Close_Prices, lambda = "auto")
+modelfit_SBUX
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+ndiffs(SBUX_Close_Prices)
+stationaryTS <- diff(SBUX_Close_Prices, differences= 1)
+plot(stationaryTS, type="l", main="Differenced and Stationary")
+#fit for auto arima model seasonal is false
+#time series display of residuals of fit A of lag max 40
+fitA_SBUX<-auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+tsdisplay(residuals(fitA_SBUX),lag.max = 40,main='(0,1,1) Model Residuals')
+auto.arima(SBUX_Close_Prices,seasonal=FALSE)
+# lags did played at the 24th position from the previous
+#fit model difference it further for fit C a custom model no lags identified.
+fitB_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,35))
+tsdisplay(residuals(fitB_SBUX),lag.max =40,main='(1,1,35) Model Residuals')
+# lags did played at the 24th position from the previous
+#fit model difference it further for fit C a custom model no lags identified.
+fitC_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,24))
+tsdisplay(residuals(fitB_SBUX),lag.max = 40,main='(1,1,24) Model Residuals')
+#Having a set standard ARIMA model multiple lags exist
+fitD_SBUX<-arima(SBUX_Close_Prices,order=c(1,1,1))
+tsdisplay(residuals(fitB_SBUX),lag.max = 40,main='(1,1,1) Model Residuals')
+# Plot of the arima models for a total of 365 days. 3 out of the 4 models says hold.
+par(mfrow=c(2,2))
+term<- 365
+price_forecast_SBUX <- forecast(modelfit_SBUX, h=term)
+plot(price_forecast_SBUX)
+# forecasting the models with the models using the forecast function for 365 days.
+fcast1_SBUX<-forecast(fitA_SBUX,h=term)
+plot(fcast1_SBUX)
+fcast2_SBUX<-forecast(fitB_SBUX,h=term)
+plot(fcast2_SBUX)
+fcast3_SBUX<-forecast(fitC_SBUX,h=term)
+plot(fcast3_SBUX)
+fcast4_SBUX<-forecast(fitD_SBUX,h=term)
+plot(fcast4_SBUX)
+a <-accuracy(fcast1_SBUX)# accuracy according  to MAPE 99.173 %
+b<- accuracy(fcast2_SBUX)# accuracy according  to MAPE 99.168 %
+c <-accuracy(fcast3_SBUX)# accuracy according to MAPE  99.167 %
+d <-accuracy(fcast4_SBUX)# accuracy according to MAPE  99.172 %
+#performing box test
+Box.test(fitA_SBUX$residuals, lag= 2, type="Ljung-Box")
+Box.test(fitA_SBUX$residuals,  type="Ljung-Box")
+N = length(SBUX_Close_Prices)
+n = 0.7*N
+train = SBUX_Close_Prices[1:n, ]
+test  = SBUX_Close_Prices[(n+1):N,  ]
+test
+trainarimafit <- auto.arima(train, seasonal =FALSE)
+AA<-tsdisplay(residuals(trainarimafit),lag.max = 40,main='(0,1,1) Model Residuals')
+trainarimafit
+predlen=length(test)
+trainarimafit1 <- forecast(trainarimafit, h=predlen)
+trainarimafit1
+accuracy(trainarimafit1)
+meanvalues <- as.vector(trainarimafit1$mean)
+precios <- as.vector(test$SBUX.Close)
+plot(meanvalues, type= "line", col= "red")
+lines(precios, type = "line")
+SBUXfc1 <- meanf(SBUX_Close_Prices, h=40)
+SBUXfc2 <- rwf(SBUX_Close_Prices, h=40)
+SBUXfc3 <- rwf(SBUX_Close_Prices, drift=TRUE, h=40)
+SBUXfc1
+SBUXtest=365
+accuracy(SBUXfc1, SBUXtest)
+plot(SBUXfc1)
+accuracy(SBUXfc2, SBUXtest)
+plot(SBUXfc2)
+accuracy(SBUXfc3, SBUXtest)
+plot(SBUXfc3)
+Box.test(diff(SBUX_Close_Prices), lag=40, type="Ljung-Box")
+q()
